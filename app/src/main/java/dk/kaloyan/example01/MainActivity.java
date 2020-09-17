@@ -1,5 +1,6 @@
 package dk.kaloyan.example01;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -13,12 +14,16 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 
 import java.math.BigInteger;
 import java.util.Random;
 
 import entities.Clicks;
+import entities.MainActivityViewModel;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     public static final String KEY_CLICKS_COUNT = "dk.kaloyan.example01.CLICKS_COUNT";
@@ -26,7 +31,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private final String MAIN_ACTIVITY = "MainActivity";
     private final String START_LABEL = "Click Me !";
     private final String INCREMENT_VALUE = "1";
-    private final String START_VALUE = "0";
+    private String startValue = "0";
     private final String TIMES_CLICKED_S = "Times Clicked: %s";
     private TextView textViewMessage;
     private Button buttonClickMe;
@@ -37,12 +42,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private EditText editTextUrl;
     private Button buttonPassClicks;
     private BigInteger clicksCount = new BigInteger("0");
+    private MainActivityViewModel mainActivityViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.i(MAIN_ACTIVITY,"OnCreate was called");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        ViewModelProvider viewModelProvider = new ViewModelProvider(getViewModelStore(),
+                ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication()));
+
+        mainActivityViewModel = viewModelProvider.get(MainActivityViewModel.class);
+
+        if(mainActivityViewModel.isNewlyCreated && savedInstanceState != null){
+            mainActivityViewModel.restoreState(savedInstanceState);
+            startValue = mainActivityViewModel.clicksCount;
+        }
+
+        mainActivityViewModel.isNewlyCreated = false;
 
         initialize();
 
@@ -53,7 +71,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         buttonBrowseUrl.setOnClickListener(this);
 
-        this.textViewMessage.setText(this.START_VALUE);
+        this.textViewMessage.setText(this.startValue);
         this.textViewMessage.setTextSize(TypedValue.COMPLEX_UNIT_SP, 34);
 
         this.buttonClickMe.setText(START_LABEL);
@@ -73,6 +91,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Log.i(MAIN_ACTIVITY,"buttonClickMe.setOnClickListener was called");
 
             clicksCount = new BigInteger(this.textViewMessage.getText().toString()).add(new BigInteger(INCREMENT_VALUE));
+
+            mainActivityViewModel.clicksCount = clicksCount.toString();
+
             this.textViewMessage.setText( clicksCount.toString() );
             ((Button)v).setText(String.format(TIMES_CLICKED_S, clicksCount.toString()));
         }else if(R.id.imageViewPerson == VIEW_ID){
@@ -84,6 +105,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Intent intent = new Intent(MainActivity.this, CounterActivity.class);
             intent.putExtra(Clicks.KEY_CLICKS, new Clicks(clicksCount.toString()));
             intent.putExtra(MainActivity.KEY_CLICKS_COUNT, clicksCount.toString());
+
             startActivity(intent);
         }
     }
@@ -104,5 +126,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         this.imageViewPerson = findViewById(R.id.imageViewPerson);
     }
 
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        Log.e(MAIN_ACTIVITY,"onSaveInstanceState is called");
+        if(outState != null){
+            mainActivityViewModel.saveState(outState);
+        }
+    }
 
 }
