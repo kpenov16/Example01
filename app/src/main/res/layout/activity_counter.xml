@@ -6,4 +6,39 @@
     android:layout_height="match_parent"
     tools:context=".CounterActivity">
 
+    <Button
+        android:id="@+id/buttonCountMore"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Count up more"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="@+id/textViewCountMore"
+        app:layout_constraintHorizontal_bias="0.512"
+        app:layout_constraintStart_toStartOf="@+id/textViewCountMore"
+        app:layout_constraintTop_toBottomOf="@+id/textViewCountMore" />
+
+    <TextView
+        android:id="@+id/textViewCountMore"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="16dp"
+        android:text="0"
+        android:textSize="36sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/buttonSendEmail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="Send Count as Email"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="@+id/buttonCountMore"
+        app:layout_constraintStart_toStartOf="@+id/buttonCountMore"
+        app:layout_constraintTop_toBottomOf="@+id/buttonCountMore" />
 </androidx.constraintlayout.widget.ConstraintLayout>
